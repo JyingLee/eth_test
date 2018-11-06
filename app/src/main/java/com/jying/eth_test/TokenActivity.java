@@ -41,6 +41,8 @@ public class TokenActivity extends AppCompatActivity {
     private static final String private_key = "DED5206446CCAF127ACE7DE199B9E629FF26BC7A0DBD173A169A106616B92EFB";//私钥
     private static final String contract_address = "0xc161eabc4df188c2c7624cf8886e8a1f61924e27";//部署的合约地址
     private static final String public_key = "0x5Ef8BE889961Bea484E0b518D6b9D6Aa22aDb32b";//公钥
+    private static final String has_eth_pri = "0x2baf6571ae20064242d7472de0531f758567ea3f5a165c89a7d6f8d9e48ba901";
+    private static final String has_eth_pub = "0xd439e986f8d7ca72cc1bd53bbe8ca9b0401036e9";
     private Web3j web3;
     private Credentials credentials;
     private int munGasLimit = 500000;
@@ -81,6 +83,8 @@ public class TokenActivity extends AppCompatActivity {
     EditText et_count;
     @BindView(R.id.token_gas_used)
     TextView tv_gasUsed;
+    @BindView(R.id.token_cutter)
+    TextView tv_cutter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -114,9 +118,15 @@ public class TokenActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            tv_status.setText("连接合约成功\n" + "版本号：" + web3ClientVersion.getWeb3ClientVersion() + "\n连接网络：" + infura_url + "\n" + "合约地址：" + contractAddtrss
-                                    + "\n当前钱包地址：" + cutterUser);
+                            tv_status.setText("连接合约成功\n" + "版本号："
+                                    + web3ClientVersion.getWeb3ClientVersion()
+                                    + "\n连接网络："
+                                    + infura_url
+                                    + "\n" + "合约地址："
+                                    + contractAddtrss
+                            );
                             progressBar.setVisibility(View.GONE);
+                            tv_cutter.setText("当前钱包地址：" + cutterUser);
                         }
                     });
                 } catch (IOException e) {
@@ -127,7 +137,8 @@ public class TokenActivity extends AppCompatActivity {
     }
 
 
-    @OnClick({R.id.token_check, R.id.token_check_my_money, R.id.token_check_all_money, R.id.token_get, R.id.token_copy_address, R.id.token_send, R.id.token_paste})
+    @OnClick({R.id.token_check, R.id.token_check_my_money, R.id.token_check_all_money, R.id.token_get,
+            R.id.token_copy_address, R.id.token_send, R.id.token_paste, R.id.switch_cutter, R.id.switch_eth})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.token_check:
@@ -250,6 +261,23 @@ public class TokenActivity extends AppCompatActivity {
                 if (!to.isEmpty() && !count.isEmpty()) {
                     transaction(to, count);
                 }
+                break;
+            case R.id.switch_eth:
+                this_pri = has_eth_pri;
+                cutterUser = has_eth_pub;
+                tv_cutter.setText("当前钱包地址：" + cutterUser);
+                Toast.makeText(TokenActivity.this, "已切换", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.switch_cutter:
+                SharedPreferences sp2 = getSharedPreferences("address", Context.MODE_PRIVATE);
+                cutterUser = sp2.getString("address", "0");
+                this_pri = sp2.getString("private", "0");
+                tv_cutter.setText("当前钱包地址：" + cutterUser);
+                if (cutterUser.equals("0") || this_pri.equals("0")) {
+                    Toast.makeText(TokenActivity.this, "当前钱包获取失败", Toast.LENGTH_SHORT).show();
+                }
+                Toast.makeText(TokenActivity.this, "已切换", Toast.LENGTH_SHORT).show();
+                break;
 
         }
     }
@@ -281,12 +309,29 @@ public class TokenActivity extends AppCompatActivity {
                         public void run() {
                             progressBar.setVisibility(View.GONE);
                             tv_gasUsed.setText("GAS花费:" + gasused + "+" + tranGas);
+                            Toast.makeText(TokenActivity.this, "交易成功", Toast.LENGTH_SHORT).show();
                         }
                     });
                 } catch (ExecutionException e) {
                     e.printStackTrace();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressBar.setVisibility(View.GONE);
+                            Toast.makeText(TokenActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
+                            tv_gasUsed.setText("");
+                        }
+                    });
                 } catch (InterruptedException e) {
                     e.printStackTrace();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressBar.setVisibility(View.GONE);
+                            Toast.makeText(TokenActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
+                            tv_gasUsed.setText("");
+                        }
+                    });
                 }
             }
         }).start();
