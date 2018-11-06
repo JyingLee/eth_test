@@ -9,7 +9,7 @@
         android:id="@+id/wallet_ed_psd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="input keystore password" />
+        android:hint="keystore密码" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -20,7 +20,7 @@
             android:id="@+id/wallet_bt_create"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="创建钱包" />
+            android:text="创建新钱包" />
 
         <ProgressBar
             android:id="@+id/wallet_pro"
@@ -46,5 +46,6 @@
         android:id="@+id/wallet_goto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="连接代币合约" />
+        android:text="连接当前钱包" />
+
 </LinearLayout>

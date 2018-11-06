@@ -6,6 +6,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:orientation="vertical">
 
 
@@ -127,7 +129,33 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="粘贴发币方地址到to" />
+
+
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/switch_eth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="切换到有ETH的钱包" />
+
+            <Button
+                android:id="@+id/switch_cutter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="切换到当前创建的钱包" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/token_cutter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="当前钱包账户：" />
 
         <TextView
             android:id="@+id/token_gas_used"

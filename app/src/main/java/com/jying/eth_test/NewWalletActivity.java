@@ -56,6 +56,9 @@ public class NewWalletActivity extends AppCompatActivity {
     Button bt_copy;
     @BindView(R.id.wallet_goto)
     Button bt_goto;
+    private static final String has_eth_pri = "0x2baf6571ae20064242d7472de0531f758567ea3f5a165c89a7d6f8d9e48ba901";
+    private static final String has_eth_pub = "0xd439e986f8d7ca72cc1bd53bbe8ca9b0401036e9";
+    String walletFile = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -84,12 +87,12 @@ public class NewWalletActivity extends AppCompatActivity {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.wallet_bt_create:
-                SharedPreferences sp = getSharedPreferences("address", Context.MODE_PRIVATE);
-                String sp_address = sp.getString("address", "0");
-                if (!sp_address.equals("0")) {
-                    Toast.makeText(NewWalletActivity.this, "本地已经存在钱包json文件", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+//                SharedPreferences sp = getSharedPreferences("address", Context.MODE_PRIVATE);
+//                String sp_address = sp.getString("address", "0");
+//                if (!sp_address.equals("0")) {
+//                    Toast.makeText(NewWalletActivity.this, "本地已经存在钱包json文件", Toast.LENGTH_SHORT).show();
+//                    return;
+//                }
                 String password = ed_psd.getText().toString();
                 int permissionCheck = ContextCompat.checkSelfPermission(NewWalletActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
                 if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
@@ -114,6 +117,7 @@ public class NewWalletActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(this, "钱包文件不存在", Toast.LENGTH_SHORT).show();
                 }
+                break;
         }
     }
 
@@ -134,7 +138,11 @@ public class NewWalletActivity extends AppCompatActivity {
     private void createWallet(String password) {
         progressBar.setVisibility(View.VISIBLE);
         tv_wallet.setText("");
-        if (password.isEmpty()) return;
+        if (password.isEmpty()) {
+            progressBar.setVisibility(View.GONE);
+            Toast.makeText(NewWalletActivity.this, "密码不能为空", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         File fileDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS); //默认的手机根目录download
         if (!fileDir.exists()) {
@@ -148,44 +156,56 @@ public class NewWalletActivity extends AppCompatActivity {
         String mnemonics = sb.toString();
         Log.e(TAG, "生成的助记词：" + mnemonics);
 
-        //password为输入的钱包密码
-        byte[] seed = MnemonicUtils.generateSeed(mnemonics, password);
-        ECKeyPair privateKey = ECKeyPair.create(Sha256.sha256(seed));
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                //password为输入的钱包密码
+                byte[] seed = MnemonicUtils.generateSeed(mnemonics, password);
+                ECKeyPair privateKey = ECKeyPair.create(Sha256.sha256(seed));
+                try {
+                    walletFile = WalletUtils.generateWalletFile(password, privateKey, fileDir, false);
+                } catch (CipherException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
-        String walletFile = null;
-        try {
-            walletFile = WalletUtils.generateWalletFile(password, privateKey, fileDir, false);
-        } catch (CipherException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Bip39Wallet bip39Wallet = new Bip39Wallet(walletFile, mnemonics);
 
-        Log.e(TAG, bip39Wallet.getFilename()); //生成的json文件名
+                Bip39Wallet bip39Wallet = new Bip39Wallet(walletFile, mnemonics);
 
-        //导入助记词获取钱包地址
-        Credentials credentials = WalletUtils.loadBip39Credentials(password, bip39Wallet.getMnemonic());
-        Log.e(TAG, "导入助记词获取钱包地址:" + credentials.getAddress());
+                Log.e(TAG, bip39Wallet.getFilename()); //生成的json文件名
 
-        String msg = "助记词:" + bip39Wallet.getMnemonic()
-                + "\n\n钱包地址:" + credentials.getAddress()
-                + "\n\n私钥:" + Numeric.encodeQuantity(credentials.getEcKeyPair().getPrivateKey())
-                + "\n\n公钥:" + Numeric.encodeQuantity(credentials.getEcKeyPair().getPublicKey())
-                + "\n\nkeystore密码：" + password
-                + "\n\n生成的keystore地址：" + fileDir + "/" + bip39Wallet.getFilename();
+                //导入助记词获取钱包地址
+                Credentials credentials = WalletUtils.loadBip39Credentials(password, bip39Wallet.getMnemonic());
+                Log.e(TAG, "导入助记词获取钱包地址:" + credentials.getAddress());
 
-        SharedPreferences sp = getSharedPreferences("address", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sp.edit();
-        editor.putString("address", credentials.getAddress());
-        editor.putString("private", Numeric.encodeQuantity(credentials.getEcKeyPair().getPrivateKey()));
-        editor.commit();
-        Log.e(TAG, msg);
-        ed_psd.setText("");
-        tv_wallet.setText(msg);
-        progressBar.setVisibility(View.GONE);
-        if (!tv_wallet.getText().toString().equals("")) {
-            bt_copy.setVisibility(View.VISIBLE);
-        }
+                String msg = "助记词:" + bip39Wallet.getMnemonic()
+                        + "\n\n钱包地址:" + credentials.getAddress()
+                        + "\n\n私钥:" + Numeric.encodeQuantity(credentials.getEcKeyPair().getPrivateKey())
+                        + "\n\n公钥:" + Numeric.encodeQuantity(credentials.getEcKeyPair().getPublicKey())
+                        + "\n\nkeystore密码：" + password
+                        + "\n\n生成的keystore地址：" + fileDir + "/" + bip39Wallet.getFilename();
+
+                SharedPreferences sp = getSharedPreferences("address", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putString("address", credentials.getAddress());
+                editor.putString("private", Numeric.encodeQuantity(credentials.getEcKeyPair().getPrivateKey()));
+                editor.commit();
+                Log.e(TAG, msg);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ed_psd.setText("");
+                        tv_wallet.setText(msg);
+                        progressBar.setVisibility(View.GONE);
+                        if (!tv_wallet.getText().toString().equals("")) {
+                            bt_copy.setVisibility(View.VISIBLE);
+                        }
+                    }
+                });
+            }
+        }).start();
     }
 }
