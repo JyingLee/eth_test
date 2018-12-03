@@ -48,4 +48,15 @@
         android:layout_height="wrap_content"
         android:text="连接当前钱包" />
 
+    <Button
+        android:id="@+id/wallet_bt_lottery"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="抽奖" />
+
+    <Button
+        android:id="@+id/test"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="test" />
 </LinearLayout>

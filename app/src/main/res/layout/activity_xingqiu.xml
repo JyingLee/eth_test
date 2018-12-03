@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <com.jying.eth_test.View.FloatView
+        android:id="@+id/float_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:childViewBackground="@drawable/shape_circle"
+        app:defaultViewText="奥克"
+        app:parentViewBackground="@mipmap/p1" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/xingqiu_yuanli"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="原力：10" />
+
+        <TextView
+            android:id="@+id/xingqiu_aoke"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="奥克：0" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/xingqiu_lottery"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="去抽奖" />
+</LinearLayout>

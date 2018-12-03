@@ -1,4 +1,4 @@
-package com.jying.eth_test;
+package com.jying.eth_test.Activity;
 
 import android.Manifest;
 import android.content.ClipboardManager;
@@ -21,6 +21,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jying.eth_test.Base.RxBus;
+import com.jying.eth_test.Bean.MsgEvent;
+import com.jying.eth_test.R;
+
 import org.web3j.crypto.Bip39Wallet;
 import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Credentials;
@@ -40,6 +44,7 @@ import io.github.novacrypto.bip39.MnemonicGenerator;
 import io.github.novacrypto.bip39.Words;
 import io.github.novacrypto.bip39.wordlists.English;
 import io.github.novacrypto.hashing.Sha256;
+import io.reactivex.functions.Consumer;
 
 public class NewWalletActivity extends AppCompatActivity {
 
@@ -59,6 +64,8 @@ public class NewWalletActivity extends AppCompatActivity {
     private static final String has_eth_pri = "0x2baf6571ae20064242d7472de0531f758567ea3f5a165c89a7d6f8d9e48ba901";
     private static final String has_eth_pub = "0xd439e986f8d7ca72cc1bd53bbe8ca9b0401036e9";
     String walletFile = null;
+    @BindView(R.id.wallet_bt_lottery)
+    Button bt_lottery;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -83,7 +90,7 @@ public class NewWalletActivity extends AppCompatActivity {
 //        Log.e("+++", "daoru:" + msg);
     }
 
-    @OnClick({R.id.wallet_bt_create, R.id.wallet_bt_copy, R.id.wallet_goto})
+    @OnClick({R.id.wallet_bt_create, R.id.wallet_bt_copy, R.id.wallet_goto, R.id.wallet_bt_lottery, R.id.test})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.wallet_bt_create:
@@ -117,6 +124,12 @@ public class NewWalletActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(this, "钱包文件不存在", Toast.LENGTH_SHORT).show();
                 }
+                break;
+            case R.id.wallet_bt_lottery:
+                startActivity(new Intent(NewWalletActivity.this, LotteryActivity.class));
+                break;
+            case R.id.test:
+                startActivity(new Intent(NewWalletActivity.this, RxTestActivity.class));
                 break;
         }
     }

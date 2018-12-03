@@ -161,5 +161,11 @@
             android:id="@+id/token_gas_used"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/token_burn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="销毁10个代币测试" />
     </LinearLayout>
 </ScrollView>

@@ -1,4 +1,4 @@
-package com.jying.eth_test;
+package com.jying.eth_test.Activity;
 
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jying.eth_test.Contracts.TokenERC20_sol_TokenERC20;
+import com.jying.eth_test.R;
 
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
@@ -43,6 +44,7 @@ public class TokenActivity extends AppCompatActivity {
     private static final String public_key = "0x5Ef8BE889961Bea484E0b518D6b9D6Aa22aDb32b";//公钥
     private static final String has_eth_pri = "0x2baf6571ae20064242d7472de0531f758567ea3f5a165c89a7d6f8d9e48ba901";
     private static final String has_eth_pub = "0xd439e986f8d7ca72cc1bd53bbe8ca9b0401036e9";
+    private static final String new_contractAK = "0xaa797b01f79a3af594669bcae8f95a19c9c9eae2";//新的代币合约
     private Web3j web3;
     private Credentials credentials;
     private int munGasLimit = 500000;
@@ -85,6 +87,8 @@ public class TokenActivity extends AppCompatActivity {
     TextView tv_gasUsed;
     @BindView(R.id.token_cutter)
     TextView tv_cutter;
+    @BindView(R.id.token_burn)
+    Button bt_burn;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -110,7 +114,7 @@ public class TokenActivity extends AppCompatActivity {
                 });
                 credentials = Credentials.create(private_key);
                 web3 = Web3j.build(new HttpService(infura_url));
-                tokenERC20 = TokenERC20_sol_TokenERC20.load(contract_address, web3, credentials, ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+                tokenERC20 = TokenERC20_sol_TokenERC20.load(new_contractAK, web3, credentials, ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
                 try {
                     Web3ClientVersion web3ClientVersion = web3.web3ClientVersion().send();
                     Log.e(TAG, "版本号:" + web3ClientVersion.getWeb3ClientVersion());
@@ -138,7 +142,7 @@ public class TokenActivity extends AppCompatActivity {
 
 
     @OnClick({R.id.token_check, R.id.token_check_my_money, R.id.token_check_all_money, R.id.token_get,
-            R.id.token_copy_address, R.id.token_send, R.id.token_paste, R.id.switch_cutter, R.id.switch_eth})
+            R.id.token_copy_address, R.id.token_send, R.id.token_paste, R.id.switch_cutter, R.id.switch_eth, R.id.token_burn})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.token_check:
@@ -278,7 +282,39 @@ public class TokenActivity extends AppCompatActivity {
                 }
                 Toast.makeText(TokenActivity.this, "已切换", Toast.LENGTH_SHORT).show();
                 break;
-
+            case R.id.token_burn:
+                if (tokenERC20 != null) {
+                    progressBar.setVisibility(View.VISIBLE);
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                TransactionReceipt burnRece = tokenERC20.burn(BigInteger.valueOf(10)).sendAsync().get();
+                                TokenERC20_sol_TokenERC20.BurnEventResponse burnEventResponse = tokenERC20.getBurnEvents(burnRece).get(0);
+                                if (burnEventResponse != null) {
+                                    Log.e(TAG, "消耗的gas:" + burnRece.getGasUsed());
+                                    runOnUiThread(() -> {
+                                        progressBar.setVisibility(View.GONE);
+                                        Toast.makeText(TokenActivity.this, "已成功销毁10个代币", Toast.LENGTH_SHORT).show();
+                                    });
+                                }
+                            } catch (ExecutionException e) {
+                                e.printStackTrace();
+                                runOnUiThread(() -> {
+                                    progressBar.setVisibility(View.GONE);
+                                    Toast.makeText(TokenActivity.this, "eth余额不足", Toast.LENGTH_SHORT).show();
+                                });
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                                runOnUiThread(() -> {
+                                    progressBar.setVisibility(View.GONE);
+                                    Toast.makeText(TokenActivity.this, "eth余额不足", Toast.LENGTH_SHORT).show();
+                                });
+                            }
+                        }
+                    }).start();
+                }
+                break;
         }
     }
 
@@ -286,53 +322,45 @@ public class TokenActivity extends AppCompatActivity {
     private TokenERC20_sol_TokenERC20 newToken;
 
     private void transaction(String to, String count) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+        new Thread(() -> {
+            runOnUiThread(() -> progressBar.setVisibility(View.VISIBLE));
+            newCredentials = Credentials.create(this_pri);
+            newToken = TokenERC20_sol_TokenERC20.load(new_contractAK, web3, newCredentials, ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
+            try {
+                TransactionReceipt newRec = newToken.approve(cutterUser, BigInteger.valueOf(Long.parseLong(count))).sendAsync().get();
+                String gasused = String.valueOf(newRec.getGasUsed());
+                Log.e(TAG, gasused);
+                TransactionReceipt tranRec = newToken.transferFrom(cutterUser, to, BigInteger.valueOf(Long.parseLong(count))).sendAsync().get();
+                String tranGas = String.valueOf(tranRec.getGasUsed());
+                Log.e(TAG, tranGas);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        progressBar.setVisibility(View.VISIBLE);
+                        progressBar.setVisibility(View.GONE);
+                        tv_gasUsed.setText("GAS花费:" + gasused + "+" + tranGas);
+                        Toast.makeText(TokenActivity.this, "交易成功", Toast.LENGTH_SHORT).show();
                     }
                 });
-                newCredentials = Credentials.create(this_pri);
-                newToken = TokenERC20_sol_TokenERC20.load(contract_address, web3, newCredentials, ManagedTransaction.GAS_PRICE, Contract.GAS_LIMIT);
-                try {
-                    TransactionReceipt newRec = newToken.approve(cutterUser, BigInteger.valueOf(Long.parseLong(count))).sendAsync().get();
-                    String gasused = String.valueOf(newRec.getGasUsed());
-                    Log.e(TAG, gasused);
-                    TransactionReceipt tranRec = newToken.transferFrom(cutterUser, to, BigInteger.valueOf(Long.parseLong(count))).sendAsync().get();
-                    String tranGas = String.valueOf(tranRec.getGasUsed());
-                    Log.e(TAG, tranGas);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            progressBar.setVisibility(View.GONE);
-                            tv_gasUsed.setText("GAS花费:" + gasused + "+" + tranGas);
-                            Toast.makeText(TokenActivity.this, "交易成功", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            progressBar.setVisibility(View.GONE);
-                            Toast.makeText(TokenActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
-                            tv_gasUsed.setText("");
-                        }
-                    });
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            progressBar.setVisibility(View.GONE);
-                            Toast.makeText(TokenActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
-                            tv_gasUsed.setText("");
-                        }
-                    });
-                }
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(TokenActivity.this, "eth余额不足", Toast.LENGTH_SHORT).show();
+                        tv_gasUsed.setText("");
+                    }
+                });
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(TokenActivity.this, "eth余额不足", Toast.LENGTH_SHORT).show();
+                        tv_gasUsed.setText("");
+                    }
+                });
             }
         }).start();
     }

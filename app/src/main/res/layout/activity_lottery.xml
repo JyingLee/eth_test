@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <com.jying.eth_test.View.LotteryView
+        android:id="@+id/lotteryview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:layout_margin="16dp"
+        android:padding="4dp"
+        app:inner_round_card_color_default="#FFFFFF"
+        app:outer_small_circle_color_active="#F0FF2F"
+        app:outer_small_circle_color_default="#139AC8"
+        app:self_width_size_factor="0.85" />
+
+    <TextView
+        android:id="@+id/lottery_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <ProgressBar
+        android:id="@+id/lottery_pro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/lottery_get"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="获取当前抽奖记录" />
+</RelativeLayout>
