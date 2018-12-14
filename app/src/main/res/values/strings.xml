@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">eth</string>
+    <string name="app_name">奥克星球</string>
 
     <string-array name="jifeng_array_info">
         <item name="huawei_mobile">华为荣耀5C</item>

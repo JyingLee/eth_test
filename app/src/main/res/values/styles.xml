@@ -15,4 +15,5 @@
         <attr name="defaultViewText" format="string" />
         <attr name="chidTextSize" format="dimension" />
     </declare-styleable>
+
 </resources>

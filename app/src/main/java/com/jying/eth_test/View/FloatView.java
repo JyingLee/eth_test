@@ -41,6 +41,8 @@ public class FloatView extends RelativeLayout {
     private String defaultViewText;
     private float childSize;
     private ballClickListaner mListener;
+    private DefaultViewListener defaultViewListener;
+    private int flag = 1;
 
     public interface ballClickListaner {
         void itemClick(int position, Number value);
@@ -48,6 +50,14 @@ public class FloatView extends RelativeLayout {
 
     public void setOnBallClickListener(ballClickListaner itemClickListener) {
         this.mListener = itemClickListener;
+    }
+
+    public interface DefaultViewListener {
+        void click(View view);
+    }
+
+    public void setDefaultViewListener(DefaultViewListener defaultViewListener) {
+        this.defaultViewListener = defaultViewListener;
     }
 
     public FloatView(Context context) {
@@ -102,7 +112,7 @@ public class FloatView extends RelativeLayout {
     }
 
     private void initFloatAnim(TextView textView) {
-        Animation animation = new TranslateAnimation(0, 0, -20, 10);
+        Animation animation = new TranslateAnimation(0, 0, -5, 10);
         animation.setDuration(ANIMATION_TIME);
         animation.setRepeatCount(Integer.MAX_VALUE);
         animation.setInterpolator(new AccelerateDecelerateInterpolator());
@@ -120,8 +130,19 @@ public class FloatView extends RelativeLayout {
     private void setChildViewPosition(TextView textView) {
         Random randomX = new Random();
         Random randomY = new Random();
-        float x = (float) ((randomX.nextInt(100) / 100.0) * (parentWidth));
-        float y = randomY.nextFloat() * (parentHeight - textView.getMeasuredHeight());
+        float x;
+        float y;
+        int centerY = parentHeight / 2;
+        if (flag == 1) {
+            x = randomX.nextFloat() * parentWidth + parentWidth - textView.getMeasuredWidth();
+            y = randomY.nextFloat() * centerY + centerY - textView.getMeasuredHeight();
+            flag = -1;
+        } else {
+            x = parentWidth - (randomX.nextFloat() * parentWidth) + textView.getMeasuredWidth();
+            y = centerY - randomY.nextFloat() * centerY + textView.getMeasuredHeight();
+            flag = 1;
+        }
+//        y = randomY.nextFloat() * (parentHeight - textView.getMeasuredHeight());
         textView.setX(x);
         textView.setY(y);
         Log.e(TAG, x + "," + y);//小球坐标
@@ -152,6 +173,15 @@ public class FloatView extends RelativeLayout {
         initAnim(defaultView);
         //设置上下抖动的动画
         initFloatAnim(defaultView);
+
+        defaultView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (defaultViewListener != null) {
+                    defaultViewListener.click(v);
+                }
+            }
+        });
     }
 
     //点击事件

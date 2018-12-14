@@ -12,4 +12,5 @@
     <color name="small_circle_color_blue">#139AC8</color>
     <color name="small_circle_color_yellow">#F0FF2F</color>
 
+    <color name="color_while">#ffffff</color>
 </resources>

@@ -4,12 +4,14 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jying.eth_test.Base.BaseActivity;
 import com.jying.eth_test.Bean.LotteryBean;
 import com.jying.eth_test.Contracts.AokeToken_sol_AokeToken;
 import com.jying.eth_test.Contracts.Lottery_sol_Lottery;
@@ -37,7 +39,7 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import okhttp3.ResponseBody;
 
-public class LotteryActivity extends RxAppCompatActivity {
+public class LotteryActivity extends BaseActivity {
 
     @BindView(R.id.lotteryview)
     LotteryView lotteryView;
@@ -50,7 +52,6 @@ public class LotteryActivity extends RxAppCompatActivity {
     public static final String TAG = "===debug===";
     private static final String has_eth_pri = "0x2baf6571ae20064242d7472de0531f758567ea3f5a165c89a7d6f8d9e48ba901";
     private static final String has_eth_pub = "0xd439e986f8d7ca72cc1bd53bbe8ca9b0401036e9";
-    private static final String contract_address = "0xc161eabc4df188c2c7624cf8886e8a1f61924e27";//第一次erc20部署的代币合约地址
     private static final String infura_url = "https://rinkeby.infura.io/v3/f806430ae87349d490a96e06f2ea8519";
     private static final String private_key = "DED5206446CCAF127ACE7DE199B9E629FF26BC7A0DBD173A169A106616B92EFB";//私钥
     private static final String public_key = "0x5Ef8BE889961Bea484E0b518D6b9D6Aa22aDb32b";//公钥
