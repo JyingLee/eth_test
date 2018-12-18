@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -15,12 +17,14 @@ import android.widget.Toast;
 
 import com.jying.eth_test.Adapter.RecordAdapter;
 import com.jying.eth_test.Base.BaseActivity;
+import com.jying.eth_test.Bean.RecordBean;
 import com.jying.eth_test.Contracts.AokeToken2_sol_AokeToken2;
 import com.jying.eth_test.R;
 import com.jying.eth_test.Token.ContractManager;
 import com.jying.eth_test.View.FloatView;
 
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.web3j.tuples.generated.Tuple3;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -56,6 +60,7 @@ public class XingqiuActivity extends BaseActivity {
     @BindView(R.id.xingqiu_recyclerview)
     RecyclerView recyclerView;
     private RecordAdapter recordAdapter;
+    private List<RecordBean> lists = new ArrayList<>();
 
     @SuppressLint("CheckResult")
     @Override
@@ -84,18 +89,51 @@ public class XingqiuActivity extends BaseActivity {
     }
 
     private void getRecordList() {
-        try {
-            aokeToken2.getRecord(cutterUser).sendAsync().get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        if (lists == null || aokeToken2 == null || recordAdapter == null) return;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    lists.clear();
+                    Tuple3 tuple3 = aokeToken2.getRecord(cutterUser).sendAsync().get();
+                    if (tuple3 != null && tuple3.getSize() != 0) {
+                        List<BigInteger> times = (List<BigInteger>) tuple3.getValue1();
+                        List<BigInteger> aks = (List<BigInteger>) tuple3.getValue2();
+                        List<BigInteger> flags = (List<BigInteger>) tuple3.getValue3();
+                        for (int i = 0; i < times.size(); i++) {
+                            lists.add(new RecordBean(times.get(i), aks.get(i), flags.get(i)));
+                        }
+                        if (lists.size() == times.size()) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    recordAdapter.setList(lists);
+                                }
+                            });
+                        }
+                    }
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        pullAoke(cutterUser);
+        getRecordList();
     }
 
     private void initRecyclerView() {
         recordAdapter = new RecordAdapter(XingqiuActivity.this);
         recyclerView.setLayoutManager(new LinearLayoutManager(XingqiuActivity.this, LinearLayoutManager.VERTICAL, false));
+        DividerItemDecoration decoration = new DividerItemDecoration(XingqiuActivity.this, LinearLayoutManager.VERTICAL);
+        decoration.setDrawable(ContextCompat.getDrawable(XingqiuActivity.this, R.drawable.division_while));
+        recyclerView.addItemDecoration(decoration);
         recyclerView.setAdapter(recordAdapter);
     }
 
@@ -114,6 +152,7 @@ public class XingqiuActivity extends BaseActivity {
                             public void run() {
                                 showToast("成功同步奥克");
                                 notifyNum = 0;
+                                getRecordList();
                             }
                         });
                     }
@@ -136,6 +175,7 @@ public class XingqiuActivity extends BaseActivity {
     }
 
     private void pullAoke(String address) {
+        if (pro == null || aokeToken2 == null || tv_aoke == null) return;
         pro.setVisibility(View.VISIBLE);
         new Thread(new Runnable() {
             @Override
@@ -183,11 +223,11 @@ public class XingqiuActivity extends BaseActivity {
     private void setAK() {
         List<Float> list = new ArrayList<>();
         list.add((float) 3.125);
-        list.add((float) 6.125);
+        list.add((float) 2.125);
         list.add((float) 1.264);
         list.add((float) 1.158);
         list.add((float) 2.264);
-        list.add((float) 2.264);
+        list.add((float) 2.064);
         floatView.setList(list);
 
         floatView.setOnBallClickListener(new FloatView.ballClickListaner() {

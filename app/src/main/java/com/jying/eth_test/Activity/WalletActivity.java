@@ -21,6 +21,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jying.eth_test.Base.BaseActivity;
 import com.jying.eth_test.R;
 
 import org.web3j.crypto.Bip39Wallet;
@@ -43,7 +44,7 @@ import io.github.novacrypto.bip39.Words;
 import io.github.novacrypto.bip39.wordlists.English;
 import io.github.novacrypto.hashing.Sha256;
 
-public class WalletActivity extends AppCompatActivity {
+public class WalletActivity extends BaseActivity {
 
     @BindView(R.id.wallet_ed_psd)
     EditText ed_psd;
@@ -72,7 +73,6 @@ public class WalletActivity extends AppCompatActivity {
         if (tv_wallet.getText().toString().equals("")) {
             bt_copy.setVisibility(View.GONE);
         }
-
     }
 
     @OnClick({R.id.wallet_bt_create, R.id.wallet_bt_copy, R.id.wallet_goto, R.id.wallet_go})

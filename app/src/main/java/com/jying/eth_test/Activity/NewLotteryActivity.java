@@ -236,8 +236,22 @@ public class NewLotteryActivity extends BaseActivity {
                     });
                 } catch (ExecutionException e) {
                     e.printStackTrace();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            showToast("eth余额不足");
+                            pro.setVisibility(View.GONE);
+                        }
+                    });
                 } catch (InterruptedException e) {
                     e.printStackTrace();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            showToast("eth余额不足");
+                            pro.setVisibility(View.GONE);
+                        }
+                    });
                 }
             }
         }).start();
@@ -263,8 +277,24 @@ public class NewLotteryActivity extends BaseActivity {
                     }
                 } catch (ExecutionException e) {
                     e.printStackTrace();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            showToast("ak余额不足");
+                            tv_prize.setText("ak余额不足");
+                            pro.setVisibility(View.GONE);
+                        }
+                    });
                 } catch (InterruptedException e) {
                     e.printStackTrace();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            showToast("ak余额不足");
+                            tv_prize.setText("ak余额不足");
+                            pro.setVisibility(View.GONE);
+                        }
+                    });
                 }
             }
         }).start();

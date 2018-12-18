@@ -11,7 +11,9 @@ import android.widget.TextView;
 import com.jying.eth_test.Bean.RecordBean;
 import com.jying.eth_test.R;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -29,7 +31,7 @@ public class RecordAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     public void setList(List<RecordBean> newList) {
         list.clear();
-        newList.addAll(newList);
+        list.addAll(newList);
         notifyDataSetChanged();
     }
 
@@ -50,11 +52,15 @@ public class RecordAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             RecordHolder vh = (RecordHolder) viewHolder;
             if (list.get(i).getFlag().intValue() == 0) {
                 vh.tv_flag.setText("消耗");
+                vh.tv_ak.setText("-" + list.get(i).getAk().toString() + "ak");
             } else if (list.get(i).getFlag().intValue() == 1) {
                 vh.tv_flag.setText("收益");
+                vh.tv_ak.setText("+" + list.get(i).getAk().toString() + "ak");
             }
-            vh.tv_ak.setText(list.get(i).getAk().toString());
-            vh.tv_time.setText(list.get(i).getTime().toString());
+            long timestamp = list.get(i).getTime().intValue();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String time = sdf.format(new Date(timestamp * 1000));
+            vh.tv_time.setText(time);
         }
     }
 

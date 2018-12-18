@@ -48,7 +48,7 @@
     <com.jying.eth_test.View.FloatView
         android:id="@+id/float_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="200dp"
         app:childViewBackground="@drawable/shape_circle"
         app:defaultViewText="奥克"
         app:parentViewBackground="@mipmap/p1" />
@@ -97,7 +97,7 @@
         android:text="当前用户"
         android:textColor="@color/color_while" />
 
-    <RelativeLayout
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/xingqiu_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

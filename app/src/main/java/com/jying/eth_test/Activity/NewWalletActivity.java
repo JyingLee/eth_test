@@ -94,12 +94,6 @@ public class NewWalletActivity extends AppCompatActivity {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.wallet_bt_create:
-//                SharedPreferences sp = getSharedPreferences("address", Context.MODE_PRIVATE);
-//                String sp_address = sp.getString("address", "0");
-//                if (!sp_address.equals("0")) {
-//                    Toast.makeText(NewWalletActivity.this, "本地已经存在钱包json文件", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
                 String password = ed_psd.getText().toString();
                 int permissionCheck = ContextCompat.checkSelfPermission(NewWalletActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
                 if (permissionCheck != PackageManager.PERMISSION_GRANTED) {

@@ -22,7 +22,7 @@
             android:id="@+id/item_prize_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@mipmap/icon_huawei_mobile" />
+            android:src="@mipmap/icon_huawei_mobile" />
 
         <TextView
             android:id="@+id/item_prize_info"

@@ -5,7 +5,7 @@ import java.math.BigInteger;
 public class RecordBean {
     private BigInteger time;
     private BigInteger ak;
-    private BigInteger flag;
+    private BigInteger flag;//1是收益，0是减少
 
     public RecordBean(BigInteger time, BigInteger ak, BigInteger flag) {
         this.time = time;

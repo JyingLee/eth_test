@@ -1,66 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@mipmap/p4"
+    android:fitsSystemWindows="true">
 
     <ProgressBar
         android:id="@+id/wallet_pro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
+        android:layout_alignParentRight="true"
         android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/wallet_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:padding="8dp"
+        android:text="我的钱包"
+        android:textColor="@color/color_while"
+        android:textSize="16sp" />
 
     <LinearLayout
         android:id="@+id/wallet_ll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/wallet_title"
         android:orientation="vertical">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@color/colorAccent"
-            android:padding="8dp"
-            android:text="我的钱包"
-            android:textColor="@color/color_while" />
-
-        <Button
-            android:id="@+id/wallet_goto"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="30dp"
-            android:background="@drawable/bt_blue"
-            android:padding="5dp"
-            android:text="连接当前钱包"
-            android:textColor="@color/color_while" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
-            android:orientation="horizontal"
-            android:paddingLeft="10dp">
+            android:orientation="horizontal">
 
-            <EditText
-                android:id="@+id/wallet_ed_psd"
+            <Button
+                android:id="@+id/wallet_goto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="@drawable/kuang_fen"
-                android:hint="keystore密码"
-                android:padding="8dp" />
+                android:background="@color/colorPrimary"
+                android:padding="5dp"
+                android:text="连接当前钱包"
+                android:textColor="@color/color_while" />
 
             <Button
                 android:id="@+id/wallet_bt_create"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:background="@drawable/bt_blue"
+                android:background="@color/colorPrimary"
                 android:padding="5dp"
                 android:text="创建新钱包"
                 android:textColor="@color/color_while" />
+
+            <EditText
+                android:id="@+id/wallet_ed_psd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/kuang_fen"
+                android:hint="keystore密码"
+                android:padding="8dp"
+                android:textColor="@color/color_while"
+                android:textColorHint="@color/color_while" />
+
         </LinearLayout>
 
         <TextView
@@ -68,13 +73,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:padding="5dp" />
+            android:padding="5dp"
+            android:textColor="@color/color_while" />
 
         <Button
             android:id="@+id/wallet_bt_copy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="复制钱包信息"
+            android:textColor="@color/color_while"
             android:visibility="gone" />
 
     </LinearLayout>
@@ -84,7 +91,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/wallet_ll"
-        android:padding="5dp" />
+        android:padding="5dp"
+        android:textColor="@color/color_while" />
 
     <Button
         android:id="@+id/wallet_go"
